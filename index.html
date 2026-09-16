@@ -41,18 +41,22 @@ button{background:#fffefa;border:1px solid #d7ddd1;color:#3a5144;font-size:11px;
 @media(max-width:1100px){.layoutWorkspace{grid-template-columns:1fr}.layoutTools{position:static;grid-row:1;padding:15px}.layoutTools .layerBar{margin-bottom:0}.layoutTools .editBar{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px}.layoutTools select{width:auto}.layoutTools .layerBar #selectedLayer{flex:0 1 auto}.layoutTools #addLayer,.layoutTools #duplicateLayer,.layoutTools #removeLayer,.layoutTools #undoEdit{flex:0 1 auto}.layoutTools .layerBar span{width:auto}}
 
 .layoutWorkspace{grid-template-columns:minmax(0,1fr)}.layoutTools{position:static;grid-row:1;padding:15px 18px}.layoutTools .eyebrow{margin-bottom:10px}.layoutTools .layerBar{margin-bottom:0}.layoutTools .editBar{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px;padding-top:12px}.layoutTools select{width:auto}.layoutTools .layerBar #selectedLayer{flex:0 1 auto}.layoutTools #addLayer,.layoutTools #duplicateLayer,.layoutTools #removeLayer,.layoutTools #undoEdit{flex:0 1 auto}.layoutTools .layerBar span{width:auto}.layoutCanvas{grid-row:2}
+
+.partLegend{display:flex;flex-wrap:wrap;gap:18px;margin:3px 0 12px;color:#627167;font-size:11px}.partLegend span{display:flex;align-items:center;gap:7px}.partLegend i{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid #0001}.threeControls .xraySwitch{display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #d4ddcf;border-radius:8px;background:#f5f7ee;width:auto;min-width:0}.threeControls .xraySwitch input{width:15px;margin:0}.threeControls .xraySwitch:has(input:checked){background:#dfe9de;color:#294f42}
+
+.layoutNavigation{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.layoutNavigation span{font-size:10px;color:#738071;margin-right:8px}.layoutNavigation output{font-size:11px;min-width:42px;text-align:center;font-variant-numeric:tabular-nums}#svg{cursor:grab;touch-action:none;user-select:none}#svg.panning{cursor:grabbing}.svgHandle text{opacity:0;pointer-events:none;transition:opacity .12s}.svgHandle:hover text,.svgHandle:focus text,.svgHandle:focus-within text{opacity:1}.svgHandle circle{vector-effect:non-scaling-stroke}.layerPick circle{vector-effect:non-scaling-stroke}@media(prefers-reduced-motion:reduce){.svgHandle text{transition:none}}
 </style></head><body><div class="app"><aside>
 <div class="eyebrow">OBJECT / STUDIO</div><div class="title">Display configurator</div>
 <div class="sub">Parametric tray groups with shared 2D contours and a matching assembled 3D preview. Dimensions are in millimeters.</div>
 <div class="grid">
 <label>Extra rear material mm<input id="rearExtra" type="number" value="10" min="0" max="40" step="1"></label><label>Extra front material mm<input id="toeExtra" type="number" value="10" min="0" max="40" step="1"></label><label>Side corner radius mm<input id="sideRadius" type="number" value="6" min="0" max="12" step="1"></label><label>Material thickness<input id="mat" type="number" value="3" step=".1"></label>
-<label>Default spacing from previous tray<input id="gap" type="number" value="30" step="1"></label><label>Default wall extension below floor<input id="extDefault" type="number" value="20" step="1"></label><label>Default front wall height<input id="frontWallDefault" type="number" value="15" step="1"></label><label>Front wall grip below floor mm<input id="frontGrip" type="number" value="20" step="1"></label><label>Part length / stand width mm<input id="partLength" type="number" value="300" step="1"></label>
+<label>Default front height / spacing<input id="frontHeightDefault" type="number" value="30" step="1"></label><label>Default wall extension below floor<input id="extDefault" type="number" value="20" step="1"></label><label>Front wall grip below floor mm<input id="frontGrip" type="number" value="20" step="1"></label><label>Part length / stand width mm<input id="partLength" type="number" value="300" step="1"></label>
 
 </div>
 <div id="trays"></div>
 <div style="display:flex;gap:7px"><button id="add">+ Add tray</button><button id="reset">Reset</button></div>
 <div class="note" id="status"></div>
-</aside><main><header class="studioHead"><div><span class="eyebrow">PARAMETRIC COLLECTION · 01</span><h1>Built to display.</h1><p>Refine the form. Explore every detail.</p></div><span class="liveBadge">● LIVE MODEL</span></header><div class="editBar projectActions"><button id="exportJSON">↓ Export JSON</button><label class="switch"><input id="showDimensions" type="checkbox" checked> Measurements</label></div><nav class="viewNav"><a href="#threeView">Assembly</a><a href="#sideLayout">2D layout</a><a href="#partsView">Flat parts</a><a href="#calcSide">Side panel</a></nav><div class="card">
+</aside><main><header class="studioHead"><div><span class="eyebrow">PARAMETRIC COLLECTION · 01</span><h1>Built to display.</h1><p>Refine the form. Explore every detail.</p></div><span class="liveBadge">● LIVE MODEL</span></header><div class="editBar projectActions"><button id="exportJSON">↓ Export JSON</button></div><nav class="viewNav"><a href="#threeView">Assembly</a><a href="#sideLayout">2D layout</a><a href="#partsView">Flat parts</a><a href="#calcSide">Side panel</a></nav><div class="card">
 <div class="partsWrap">
   <div class="partsHead"><strong>3D Assembly Preview</strong></div>
   <div class="threeControls">
@@ -61,12 +65,12 @@ button{background:#fffefa;border:1px solid #d7ddd1;color:#3a5144;font-size:11px;
     <label style="min-width:260px">Exploded view
       <input id="explodeAmount" type="range" min="0" max="1" value="0" step=".001">
     </label>
-    <button id="sideCamera" type="button">Side view</button><button id="resetCamera" type="button">Reset camera</button>
+    <label class="switch xraySwitch"><input id="xrayView" type="checkbox"> X-ray view</label><label class="switch xraySwitch"><input id="showDimensions" type="checkbox" checked> Measurements</label><button id="sideCamera" type="button">Side view</button><button id="resetCamera" type="button">Reset camera</button>
   </div>
-  <div id="threeView"><div id="threeStatus" style="padding:16px;color:#aaa">Loading 3D preview…</div></div>
+  <div class="partLegend" aria-label="Part colors"><span><i style="background:#547f70"></i>Floors</span><span><i style="background:#c9ad83"></i>Side panels</span><span><i style="background:#738cad"></i>Walls + front wall</span></div><div id="threeView"><div id="threeStatus" style="padding:16px;color:#aaa">Loading 3D preview…</div></div>
   <div class="smallnote">Drag to orbit · wheel to zoom. Assembly: floors first, then walls. Disassembly: walls first, then floors. Two identical side panels sit at the mating notches. Parts slide along their joint directions. Motion shows the assembly sequence; clearance for arbitrary settings is not certified.</div>
 </div>
-<section class="partsWrap" id="sideLayout"><div class="partsHead"><strong>2D layout</strong></div><div class="layoutWorkspace"><div class="layoutTools" role="region" aria-label="2D editing controls"><div class="eyebrow">EDIT LAYERS</div><div class="layerBar"><button id="previousLayer" aria-label="Select previous layer">←</button><b id="selectedLayer">Layer 1</b><button id="nextLayer" aria-label="Select next layer">→</button><button id="addLayer">+ Layer</button><button id="duplicateLayer">Duplicate</button><button id="removeLayer">Remove</button><button id="undoEdit">Undo</button><span>Edit dimensions in the 2D side layout · Shift bypasses snap</span></div><div class="editBar"><label class="switch"><input id="linkedEdit" type="checkbox"> Edit matching trays together</label><label class="switch"><input id="snapEnabled" type="checkbox" checked> Snap</label><select id="snapSize" aria-label="Snap spacing"><option value="1">1 mm / 1°</option><option value="5" selected>5 mm / 5°</option><option value="10">10 mm / 10°</option></select></div></div><div class="layoutCanvas"><svg id="svg" viewBox="0 0 1000 720"></svg></div></div></section><div class="partsWrap">
+<section class="partsWrap" id="sideLayout"><div class="partsHead"><strong>2D layout</strong><div class="layoutNavigation"><span>Drag to pan · scroll or pinch to zoom</span><button id="zoom2DOut" aria-label="Zoom out of 2D layout">−</button><output id="zoom2DValue" aria-live="polite">100%</output><button id="zoom2DIn" aria-label="Zoom into 2D layout">+</button><button id="fit2D">Fit view</button></div></div><div class="layoutWorkspace"><div class="layoutTools" role="region" aria-label="2D editing controls"><div class="eyebrow">EDIT LAYERS</div><div class="layerBar"><button id="previousLayer" aria-label="Select previous layer">←</button><b id="selectedLayer">Layer 1</b><button id="nextLayer" aria-label="Select next layer">→</button><button id="addLayer">+ Layer</button><button id="duplicateLayer">Duplicate</button><button id="removeLayer">Remove</button><button id="undoEdit">Undo</button><span>Edit dimensions in the 2D side layout · Shift bypasses snap</span></div><div class="editBar"><label class="switch"><input id="linkedEdit" type="checkbox"> Edit matching trays together</label><label class="switch"><input id="snapEnabled" type="checkbox" checked> Snap</label><select id="snapSize" aria-label="Snap spacing"><option value="1">1 mm / 1°</option><option value="5" selected>5 mm / 5°</option><option value="10">10 mm / 10°</option></select></div></div><div class="layoutCanvas"><svg id="svg" viewBox="0 0 1000 720"></svg></div></div></section><div class="partsWrap">
   <div class="partsHead">
     <strong>Flat parts</strong>
     <select id="partTray"></select>
@@ -79,7 +83,7 @@ button{background:#fffefa;border:1px solid #d7ddd1;color:#3a5144;font-size:11px;
   <svg id="calcSide" viewBox="0 0 900 560"></svg>
   <div class="smallnote">Front-wall construction corrected from the assembly reference: the side panel continues as a low final step, while the front wall enters through an open slot from that step's top edge. Material remains below and in front of the wall.</div>
 </div>
-<div class="partsWrap"><div class="partsHead"><strong>DXF references</strong><select id="referencePart"><option>Tray_A_Plate</option><option>Tray_A_Wall</option><option>Front_Wall</option><option>Side_Panel</option></select></div><svg id="referenceView" style="height:400px;background:#0b0b0b"></svg><div class="smallnote" id="referenceNote"></div></div></main></div>
+</main></div>
 <!-- Embedded pinned dependencies: polygon-clipping 0.15.7 (MIT), Three.js 0.180.0 (MIT). -->
 <script>!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):(t="undefined"!=typeof globalThis?globalThis:t||self).polygonClipping=e()}(this,(function(){"use strict";
 /**
@@ -77549,18 +77553,11 @@ exports.createCanvasElement = createCanvasElement;
 return exports;})();</script>
 <script>
 const NS="http://www.w3.org/2000/svg",$=q=>document.querySelector(q);
-const DEFAULT_TRAY_1={depth:50,angle:10,wall:70,rise:30,extend:20,frontWall:10,count:1};
-const DEFAULT_TRAY={depth:30,angle:10,wall:100,rise:30,extend:20,frontWall:15,count:1};
-const makeTray = (base = DEFAULT_TRAY, overrides = {}) => ({
-  ...base,
-  ...overrides
-});
-let S = {
-  trays: [
-    makeTray(DEFAULT_TRAY_1, { count: 2 }),
-    makeTray(DEFAULT_TRAY,   { count: 4 })
-  ]
-};
+const DEFAULT_TRAY_1={"depth":50,"angle":10,"wall":70,"extend":20,"count":1,"frontHeight":30};
+const PART_COLORS={floor:'#547f70',side:'#c9ad83',wall:'#738cad'};
+const DEFAULT_TRAY={"depth":30,"angle":10,"wall":100,"extend":20,"count":1,"frontHeight":30};
+const makeTray=(base=DEFAULT_TRAY,overrides={})=>({...DEFAULT_TRAY,...base,...overrides});
+let S={trays:[{"depth":50,"angle":10,"wall":70,"extend":20,"count":1,"frontHeight":10},{"depth":50,"angle":10,"wall":70,"extend":20,"count":1,"frontHeight":30},{"depth":30,"angle":10,"wall":100,"extend":20,"count":4,"frontHeight":30}]};
 
 function expandedTrays(){
   return S.trays.flatMap((group,groupIndex)=>
@@ -77578,9 +77575,8 @@ function ui(){
    <label>Floor depth mm<input data-k="depth" type="number" value="${t.depth}"></label>
    <label>Angle deg<input data-k="angle" type="number" value="${t.angle}"></label>
    <label>Rear wall height mm<input data-k="wall" type="number" value="${t.wall}"></label>
-   <label>Spacing from previous tray mm <span style="opacity:.65">(unused on the first physical tray)</span><input data-k="rise" type="number" value="${t.rise}"></label>
+   <label>Front height / spacing mm <span style="opacity:.65">(front wall on tray 1; spacing from previous on later trays)</span><input data-k="frontHeight" type="number" min="0" value="${t.frontHeight}"></label>
    <label>Wall extension below floor mm<input data-k="extend" type="number" value="${t.extend??20}"></label>
-   <label>Front wall height mm <span style="opacity:.65">(only used on first physical tray)</span><input data-k="frontWall" type="number" value="${t.frontWall??15}"></label>
    <div class="row">
      <button data-act="up" ${i===0?"disabled":""}>↑ Earlier</button>
      <button data-act="down" ${i===S.trays.length-1?"disabled":""}>↓ Later</button>
@@ -77636,7 +77632,7 @@ function solve(){
 
    // Small front wall at the front/right end of the floor.
    // It is perpendicular to the floor and extends the floor assembly upward.
-   let frontWallHeight=(i===0) ? Math.max(0,t.frontWall ?? 15) : 0;
+   let frontWallHeight=(i===0) ? Math.max(0,t.frontHeight ?? 30) : 0;
    let frontWallCenter={x:front.x+Math.cos(a)*thick/2,y:front.y+Math.sin(a)*thick/2};
    let frontWallTop={
      x:frontWallCenter.x-frontWallHeight*Math.sin(a),
@@ -77654,7 +77650,7 @@ function solve(){
      let nt=physical[i+1];
      let na=nt.angle*Math.PI/180;
      // Incoming spacing belongs to tray i+1, measured down the previous wall.
-     let frontHeight=Math.max(0,nt.rise);
+     let frontHeight=Math.max(0,nt.frontHeight);
 
      // Contact point is ON wall i's long side, moved down from its top/back
      // by the requested front-height distance.
@@ -77949,7 +77945,7 @@ function drawPartsViewer(G){
  selected.forEach(p=>{
   out.push(`<text x="35" y="${y}" fill="#ddd" font-size="14">${p.name}: ${W} × ${p.length.toFixed(1)} mm</text>`);y+=12;
   const X=x=>35+(x+W/2)*sc,Y=v=>y+(p.kind==='floor'?v+p.length/2:p.length/2-v)*sc;
-  out.push(`<path d="${contourPath(p.contours,X,Y)}" fill="${p.kind==='floor'?'#233a2a':p.kind==='wall'?'#3a3823':'#20343b'}" stroke="#bcd7bd" stroke-width="1.5" fill-rule="evenodd"/>`);
+  out.push(`<path d="${contourPath(p.contours,X,Y)}" fill="${p.kind==='floor'?PART_COLORS.floor:PART_COLORS.wall}" stroke="#bcd7bd" stroke-width="1.5" fill-rule="evenodd"/>`);
   y+=p.length*sc+35;
  });
  const svg=$('#partsView');svg.setAttribute('viewBox',`0 0 900 ${y}`);svg.style.height=`${y}px`;svg.innerHTML=out.join('');
@@ -77959,7 +77955,7 @@ function calculatedSidePanel(G){
  const xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);
  const scale=Math.min(800/(xmax-xmin||1),530/(ymax-ymin||1)),X=x=>50+(x-xmin)*scale,Y=y=>600-(y-ymin)*scale;
  const svg=$('#calcSide');svg.setAttribute('viewBox','0 0 900 650');svg.style.height='650px';
- svg.innerHTML=`<text x="50" y="28" fill="#eee" font-size="17">Calculated side panel</text><text x="50" y="49" fill="#adb4ba" font-size="12">Shared Boolean contour · ${G.model.side.length} connected region(s) · identical to the 3D extrusion</text><path d="${contourPath(G.model.side,X,Y)}" fill="#cbb48f" stroke="#eedac0" stroke-width="1.5" fill-rule="evenodd"/>`;
+ svg.innerHTML=`<text x="50" y="28" fill="#eee" font-size="17">Calculated side panel</text><text x="50" y="49" fill="#adb4ba" font-size="12">Shared Boolean contour · ${G.model.side.length} connected region(s) · identical to the 3D extrusion</text><path d="${contourPath(G.model.side,X,Y)}" fill="${PART_COLORS.side}" stroke="#eedac0" stroke-width="1.5" fill-rule="evenodd"/>`;
  if(G.model.side.length!==1)$('#status').innerHTML+=`<p style="color:#a12c21"><b>Side panel is split into ${G.model.side.length} separate regions.</b> Adjust tray angles, depths or spacing to reconnect it.</p>`;
 }
 function render(){
@@ -77975,14 +77971,14 @@ function render(){
  let sc=Math.min(850/Math.max(1,xmax-xmin),620/Math.max(1,ymax-ymin)),X=x=>80+(x-xmin)*sc,Y=y=>670-(y-ymin)*sc;
  function poly(ps,fill){E("polygon",{points:ps.map(p=>`${X(p.x)},${Y(p.y)}`).join(" "),fill,stroke:"#222","stroke-width":1.6,"stroke-linejoin":"round"})}
  G.trays.forEach(s=>{
-   poly(rectAround(s.floorRear,s.front,G.thick),"#8fc9c0");
-   poly(rectAround(s.wallBottom,s.wallTop,G.thick),"#b8cc70");
-   if(s.i===0) poly(rectAround(s.frontWallBottom,s.frontWallTop,G.thick),"#70b8cc");
+   poly(rectAround(s.floorRear,s.front,G.thick),PART_COLORS.floor);
+   poly(rectAround(s.wallBottom,s.wallTop,G.thick),PART_COLORS.wall);
+   if(s.i===0) poly(rectAround(s.frontWallBottom,s.frontWallTop,G.thick),PART_COLORS.wall);
    E("circle",{cx:X(s.rear.x),cy:Y(s.rear.y),r:3.5,fill:"#d34b45"});
-   let t=E("text",{x:X(s.front.x)+6,y:Y(s.front.y)-7,"font-size":12,fill:"#333"});t.textContent=`Tray ${s.i+1} · ${s.t.angle}°`;
+   
  });
  let title=E("text",{x:65,y:24,"font-size":14,fill:"#333"});title.textContent=`${G.trays.length} tray assemblies — floor rectangles + wall rectangles only`;
- $("#status").innerHTML=`<b>${G.trays.length} trays</b> · ${G.thick} mm material<br>Green: floors and front wall. Sand: rear walls and side panels.`;
+ $("#status").innerHTML=`<b>${G.trays.length} trays</b> · ${G.thick} mm material<br>Sage: floors. Sand: side panels. Blue: all walls, including the front.`;
 
   G.model=buildModel(G);
   window.currentGeometry=G;
@@ -77993,12 +77989,11 @@ function render(){
 }
 $("#add").onclick=()=>{S.trays.push(makeTray({
   count:1,
-  rise:+$("#gap").value,
-  extend:+$("#extDefault").value,
-  frontWall:+$("#frontWallDefault").value
+  frontHeight:+$("#frontHeightDefault").value,
+  extend:+$("#extDefault").value
 }));ui();render()};
 $("#reset").onclick=()=>{S.trays=[makeTray({count:4})];ui();render()};
-["mat","gap","extDefault","frontWallDefault","partLength","frontGrip","toeExtra","sideRadius","rearExtra"].forEach(id=>$("#"+id)?.addEventListener("input",render));
+["mat","frontHeightDefault","extDefault","partLength","frontGrip","toeExtra","sideRadius","rearExtra"].forEach(id=>$("#"+id)?.addEventListener("input",render));
 $("#partTray").addEventListener("change",()=>drawPartsViewer(window.currentGeometry));
 ui();render();
 </script>
@@ -78043,12 +78038,28 @@ const ground=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.Shado
 let root=new THREE.Group(),parts=[],lastG=null,anim=null;
 scene.add(root);
 const mats={
- floor:new THREE.MeshStandardMaterial({color:0x446c62,roughness:.4,metalness:.08}),
- wall:new THREE.MeshStandardMaterial({color:0xd6b88b,roughness:.55}),
- front:new THREE.MeshStandardMaterial({color:0x446c62,roughness:.4,metalness:.08}),
- side:new THREE.MeshStandardMaterial({color:0xcab28d,roughness:.55,side:THREE.DoubleSide}),
+ floor:new THREE.MeshStandardMaterial({color:PART_COLORS.floor,roughness:.4,metalness:.08}),
+ wall:new THREE.MeshStandardMaterial({color:PART_COLORS.wall,roughness:.5,metalness:.03}),
+ front:new THREE.MeshStandardMaterial({color:PART_COLORS.wall,roughness:.5,metalness:.03}),
+ side:new THREE.MeshStandardMaterial({color:PART_COLORS.side,roughness:.55,side:THREE.DoubleSide}),
  cut:new THREE.MeshStandardMaterial({color:0x24272b,roughness:.9})
 };
+function applyXRayView(){
+ const enabled=document.getElementById('xrayView').checked;
+ for(const name of ['floor','wall','front','side']){
+  const material=mats[name];
+  const side=enabled||name==='side'?THREE.DoubleSide:THREE.FrontSide;
+  const changed=material.transparent!==enabled||material.side!==side;
+  material.transparent=enabled;material.opacity=enabled?.2:1;material.depthWrite=!enabled;material.side=side;
+  if(changed)material.needsUpdate=true;
+ }
+ root.traverse(object=>{
+  if(object.isMesh){object.castShadow=!enabled;object.receiveShadow=!enabled;}
+  if(object.isLineSegments){object.material.opacity=enabled?.8:.18;object.material.depthTest=!enabled;object.material.depthWrite=false;object.renderOrder=enabled?10:0;}
+ });
+ ground.visible=!enabled;
+}
+
 function clearRoot(){
  scene.remove(root);root.traverse(o=>{o.geometry?.dispose();if(o.isLineSegments)o.material.dispose()});
  root=new THREE.Group();scene.add(root);parts=[]
@@ -78119,6 +78130,7 @@ function rebuild(G){
  key.target.position.copy(middle);scene.add(key.target);Object.assign(key.shadow.camera,{left:-radius,right:radius,top:radius,bottom:-radius,near:1,far:radius*6});key.shadow.camera.updateProjectionMatrix();
  applyExplosion(+$('#explodeAmount').value);
  if(firstBuild)resetCamera();
+ applyXRayView();
  window.previewDebug={root,parts,THREE,scene,camera,renderer,applyExplosion};
 }
 
@@ -78134,49 +78146,19 @@ document.getElementById("explodeAmount").addEventListener("input",e=>{if(anim)ca
 document.getElementById("explodePlay").addEventListener("click",()=>playTo(1));
 document.getElementById("assemblePlay").addEventListener("click",()=>playTo(0));
 document.getElementById("resetCamera").addEventListener("click",resetCamera);
+document.getElementById("xrayView").addEventListener("change",applyXRayView);
 const ro=new ResizeObserver(()=>{const w=Math.max(280,host.clientWidth||280),h=Math.max(360,host.clientHeight||360);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();updateCamera()});ro.observe(host);
 (function loop(){renderer.render(scene,camera);window.positionEditor3D?.();requestAnimationFrame(loop)})();
 
 document.getElementById("sideCamera").onclick=()=>{orbit.yaw=-Math.PI/2;orbit.pitch=0;updateCamera();};
 </script>
-<script>const DXF_REFERENCES={"Front_Wall":[{"type":"LINE","a":[152.7500000000026,-10.277760278147438],"b":[152.75000000000392,-17.555520556294745]},{"type":"LINE","a":[-159.74999999999997,-17.55552055629472],"b":[-152.75000000000392,-17.55552055629475]},{"type":"LINE","a":[162.75,-14.555520556294724],"b":[162.75,2.9999999999999205]},{"type":"LINE","a":[150.75,14.999999999999925],"b":[-150.75,14.999999999999925]},{"type":"LINE","a":[-162.75,2.9999999999999227],"b":[-162.75,-14.555520556294724]},{"type":"LINE","a":[-152.75000000000392,-17.55552055629475],"b":[-152.7500000000026,-10.277760278147436]},{"type":"LINE","a":[-152.7500000000026,-10.277760278147436],"b":[-149.7500000000027,-10.277760278147426]},{"type":"LINE","a":[-149.7500000000027,-10.277760278147426],"b":[-149.75000000000392,-17.555520556294745]},{"type":"LINE","a":[-149.75000000000392,-17.555520556294745],"b":[149.75000000000392,-17.555520556294745]},{"type":"LINE","a":[149.75000000000392,-17.555520556294745],"b":[149.7500000000027,-10.277760278147422]},{"type":"LINE","a":[149.7500000000027,-10.277760278147422],"b":[152.7500000000026,-10.277760278147438]},{"type":"ARC","c":[-150.74999999999997,2.9999999999999236],"r":12.000000000000002,"start":90.00000000000014,"end":180},{"type":"ARC","c":[150.75,2.9999999999999294],"r":11.999999999999993,"start":0,"end":90},{"type":"ARC","c":[159.75,-14.555520556294717],"r":3.000000000000005,"start":269.99999999999943,"end":360},{"type":"ARC","c":[-159.75,-14.555520556294717],"r":2.9999999999999893,"start":180,"end":270.0000000000005},{"type":"LINE","a":[152.75000000000392,-17.555520556294745],"b":[159.74999999999997,-17.55552055629472]}],"Tray_A_Wall":[{"type":"LINE","a":[152.75,20.50000000000054],"b":[152.75000000000006,-13.499999999999627]},{"type":"LINE","a":[-159.75,-13.499999999999673],"b":[-152.75000000000006,-13.499999999999627]},{"type":"LINE","a":[162.75000000000003,-10.499999999999668],"b":[162.75000000000003,44.0000000000005]},{"type":"LINE","a":[150.75000000000003,56.000000000000504],"b":[-150.75000000000003,56.000000000000504]},{"type":"LINE","a":[-162.75000000000003,44.0000000000005],"b":[-162.75000000000003,-10.49999999999966]},{"type":"LINE","a":[-152.75000000000006,-13.499999999999627],"b":[-152.75,20.50000000000054]},{"type":"LINE","a":[-152.75,20.50000000000054],"b":[-149.75000000000006,20.50000000000054]},{"type":"LINE","a":[-149.75000000000006,20.50000000000054],"b":[-149.75000000000006,-13.499999999999627]},{"type":"LINE","a":[-149.75000000000006,-13.499999999999627],"b":[149.75000000000006,-13.49999999999963]},{"type":"LINE","a":[149.75000000000006,-13.49999999999963],"b":[149.75000000000006,20.50000000000054]},{"type":"LINE","a":[149.75000000000006,20.50000000000054],"b":[152.75,20.50000000000054]},{"type":"ARC","c":[-150.75000000000003,44.00000000000052],"r":11.999999999999984,"start":90,"end":180},{"type":"ARC","c":[150.75,44.0000000000005],"r":12.00000000000001,"start":0,"end":89.99999999999987},{"type":"ARC","c":[159.74999999999997,-10.499999999999643],"r":3.000000000000027,"start":270.0000000000005,"end":360},{"type":"ARC","c":[-159.74999999999997,-10.499999999999643],"r":3.0000000000000426,"start":180,"end":269.99999999999943},{"type":"LINE","a":[152.75000000000006,-13.499999999999627],"b":[159.75,-13.49999999999967]}],"Tray_A_Plate":[{"type":"LWPOLYLINE","points":[[-149.75000000000006,-10.000000000000002],[-149.75000000000006,-20.000000000000007],[149.75000000000006,-20.000000000000007],[149.75000000000006,-10.000000000000002],[152.75000000000006,-10.000000000000002],[152.75000000000006,-20.000000000000007],[162.75000000000003,-20.000000000000004],[162.75000000000003,0],[-162.75000000000003,-7.703719777548943e-33],[-162.75000000000003,-20.000000000000004],[-152.75000000000006,-20.000000000000007],[-152.75000000000006,-10.000000000000002]]}],"Side_Panel":[{"type":"LINE","a":[-158.69884554874474,180.17956715978886],"b":[-148.8507680187099,181.91604893517265]},{"type":"LINE","a":[-175.14555383080983,215.86577999577412],"b":[-172.1067107211061,198.63164431825237]},{"type":"LINE","a":[-172.1067107211061,198.63164431825237],"b":[-175.06113398014276,198.11069978525168]},{"type":"LINE","a":[-239.1544761547252,-17.288812752004073],"b":[12.673769329326952,-17.288812752004134]},{"type":"LINE","a":[15.628192588363577,-13.767868219003336],"b":[14.365334388161076,-6.605843467439774]},{"type":"LINE","a":[7.41459880408623,-1.738886015368114],"b":[3.475367792037396,-2.433478726035836]},{"type":"LINE","a":[3.475367792037396,-2.433478726035836],"b":[4.73913760183532,-9.600673472519441]},{"type":"LINE","a":[4.73913760183532,-9.600673472519441],"b":[1.7847143427978023,-10.121618005520375]},{"type":"LINE","a":[1.7847143427978023,-10.121618005520375],"b":[0.5209445330007867,-2.954423259036627]},{"type":"LINE","a":[0.5209445330007867,-2.954423259036627],"b":[-9.327132997121284,-4.690905035705926]},{"type":"LINE","a":[-9.327132997121284,-4.690905035705926],"b":[-9.84807753012208,-1.7364817766693086]},{"type":"LINE","a":[-9.84807753012208,-1.7364817766693086],"b":[0,0]},{"type":"LINE","a":[0,0],"b":[-5.556741685341854,31.51384809639117]},{"type":"LINE","a":[-26.294785811587474,33.949731061125576],"b":[-23.255942702416085,16.715595383411973]},{"type":"LINE","a":[-23.255942702416085,16.715595383411973],"b":[-26.210365961452652,16.194650850411154]},{"type":"LINE","a":[-26.210365961452652,16.194650850411154],"b":[-29.249209070611826,33.428786528134616]},{"type":"LINE","a":[-12.507477269416798,36.38080554846282],"b":[-26.294785811587474,33.949731061125576]},{"type":"LINE","a":[-39.09728660073385,31.692304751465326],"b":[-39.61823113373465,34.646728010501946]},{"type":"LINE","a":[-39.61823113373465,34.646728010501946],"b":[-29.77015360361257,36.38320978717125]},{"type":"LINE","a":[-29.77015360361257,36.38320978717125],"b":[-35.326895288954454,67.89705788356247]},{"type":"LINE","a":[-56.064939415200044,70.33294084829683],"b":[-53.026096306028656,53.09880517058323]},{"type":"LINE","a":[-53.026096306028656,53.09880517058323],"b":[-55.98051956506522,52.577860637582404]},{"type":"LINE","a":[-55.98051956506522,52.577860637582404],"b":[-59.01936267423796,69.81199631530349]},{"type":"LINE","a":[-101.81793808026839,145.53043490997413],"b":[-115.60524662242517,143.09936042263934]},{"type":"LINE","a":[-128.4077474116374,140.84193411284159],"b":[-128.92869194458402,143.79635737306612]},{"type":"LINE","a":[-128.92869194458402,143.79635737306612],"b":[-119.08061441451424,145.5328391484072]},{"type":"LINE","a":[-119.08061441451424,145.5328391484072],"b":[-124.6373560988433,177.04668724401944]},{"type":"LINE","a":[-145.3754002266491,179.48257020905135],"b":[-142.3365571169454,162.2484345315296]},{"type":"LINE","a":[-142.3365571169454,162.2484345315296],"b":[-145.29098037598203,161.72748999852894]},{"type":"LINE","a":[-145.29098037598203,161.72748999852894],"b":[-148.32982348500767,178.96162567649287]},{"type":"LINE","a":[-131.58809168258875,181.91364469521534],"b":[-145.3754002266491,179.48257020905135]},{"type":"LINE","a":[-158.1779010157981,177.22514389956433],"b":[-158.69884554874474,180.17956715978886]},{"type":"LINE","a":[-245.15447615472522,284.70012194710125],"b":[-245.15447615472522,-11.288812752004063]},{"type":"LINE","a":[-237.71401025659213,288.52937572753854],"b":[-242.67542068773952,287.6545452061355]},{"type":"LINE","a":[-188.46899915290544,216.56277694651163],"b":[-178.62092162283568,218.2992587218527]},{"type":"LINE","a":[-204.91570743497053,252.24898978249684],"b":[-201.8768643252668,235.0148541049751]},{"type":"LINE","a":[-201.8768643252668,235.0148541049751],"b":[-204.83128758430348,234.4939095719744]},{"type":"LINE","a":[-42.27763087304325,72.76401533563163],"b":[-56.064939415200044,70.33294084829683]},{"type":"LINE","a":[-68.86744020434642,68.07551453863658],"b":[-69.38838473734722,71.0299377976732]},{"type":"LINE","a":[-69.38838473734722,71.0299377976732],"b":[-59.54030720722514,72.7664195743425]},{"type":"LINE","a":[-59.54030720722514,72.7664195743425],"b":[-65.0970488925809,104.28026767073126]},{"type":"LINE","a":[-85.83509301881261,106.71615063546808],"b":[-82.79624990964123,89.48201495775449]},{"type":"LINE","a":[-82.79624990964123,89.48201495775449],"b":[-85.75067316867779,88.96107042475366]},{"type":"LINE","a":[-85.75067316867779,88.96107042475366],"b":[-88.78951627785054,106.19520610247474]},{"type":"LINE","a":[-175.06113398014276,198.11069978525168],"b":[-178.0999770891684,215.34483546321565]},{"type":"LINE","a":[-161.3582452862931,218.29685448201857],"b":[-175.14555383080983,215.86577999577412]},{"type":"LINE","a":[-187.94805461995878,213.60835368628705],"b":[-188.46899915290544,216.56277694651163]},{"type":"LINE","a":[-218.23915275706614,252.94598673323435],"b":[-208.39107522699638,254.68246850857548]},{"type":"LINE","a":[-220.8985524946145,291.0632740554641],"b":[-234.68586103913125,288.6321995692196]},{"type":"LINE","a":[-234.68586103913125,288.6321995692196],"b":[-231.6470179294275,271.39806389169786]},{"type":"LINE","a":[-231.6470179294275,271.39806389169786],"b":[-234.60144118846415,270.87711935869714]},{"type":"LINE","a":[-234.60144118846415,270.87711935869714],"b":[-237.64028429748979,288.11125503666113]},{"type":"LINE","a":[-72.04778447665582,109.1472251228029],"b":[-85.83509301881261,106.71615063546808]},{"type":"LINE","a":[-98.637593807959,104.45872432580784],"b":[-99.15853834095978,107.41314758484447]},{"type":"LINE","a":[-99.15853834095978,107.41314758484447],"b":[-89.31046081083771,109.14962936151376]},{"type":"LINE","a":[-89.31046081083771,109.14962936151376],"b":[-94.86720249619346,140.6634774579025]},{"type":"LINE","a":[-115.60524662242517,143.09936042263934],"b":[-112.5664035132538,125.86522474492574]},{"type":"LINE","a":[-112.5664035132538,125.86522474492574],"b":[-115.52082677229036,125.34428021192491]},{"type":"LINE","a":[-115.52082677229036,125.34428021192491],"b":[-118.55966988159307,142.5784158893565]},{"type":"LINE","a":[-208.39107522699638,254.68246850857548],"b":[-213.94781691113764,286.1963166031228]},{"type":"LINE","a":[-191.12839889045378,254.6800642687413],"b":[-204.91570743497053,252.24898978249684]},{"type":"LINE","a":[-217.7182082241195,249.99156347300982],"b":[-218.23915275706614,252.94598673323435]},{"type":"LINE","a":[-237.64028429748979,288.11125503666113],"b":[-237.71401025659213,288.52937572753854]},{"type":"LINE","a":[-204.83128758430348,234.4939095719744],"b":[-207.8701306933291,251.72804524993836]},{"type":"LINE","a":[-59.01936267423796,69.81199631530349],"b":[-68.86744020434642,68.07551453863658]},{"type":"LINE","a":[-207.8701306933291,251.72804524993836],"b":[-217.7182082241195,249.99156347300982]},{"type":"LINE","a":[-178.0999770891684,215.34483546321565],"b":[-187.94805461995878,213.60835368628705]},{"type":"LINE","a":[-118.55966988159307,142.5784158893565],"b":[-128.4077474116374,140.84193411284159]},{"type":"LINE","a":[-29.249209070611826,33.428786528134616],"b":[-39.09728660073385,31.692304751465326]},{"type":"LINE","a":[-148.32982348500767,178.96162567649287],"b":[-158.1779010157981,177.22514389956433]},{"type":"ARC","c":[8.456487870087827,-7.647732533441362],"r":6.000000000000001,"start":10.000000000000048,"end":100.00000000000016},{"type":"ARC","c":[-219.85666342923895,285.15442753728047],"r":5.999999999999993,"start":9.999999998455785,"end":99.99999999392969},{"type":"ARC","c":[-242.15447615472524,284.70012194710125],"r":2.999999999999985,"start":100.00000000026151,"end":180},{"type":"ARC","c":[-239.15447615472516,-11.288812752004036],"r":6.00000000000005,"start":180,"end":269.9999999999997},{"type":"ARC","c":[12.67376932932695,-14.28881275200413],"r":3.000000000000005,"start":-90,"end":10.000000000000012},{"type":"ARC","c":[-71.00589541065415,103.23837860472963],"r":6.000000000000004,"start":10.000000000000453,"end":100.00000000000084},{"type":"ARC","c":[-11.465588203415102,30.47195903038959],"r":6,"start":9.99999999999994,"end":100.00000000000111},{"type":"ARC","c":[-41.23574180704156,66.8551688175584],"r":6.000000000014084,"start":10.000000000000453,"end":100.00000000000102},{"type":"LINE","a":[-88.78951627785054,106.19520610247474],"b":[-98.637593807959,104.45872432580784]},{"type":"ARC","c":[-100.77604901426673,139.62158839190084],"r":6.000000000000036,"start":10.000000000000673,"end":100.00000000000065},{"type":"ARC","c":[-130.54620261694464,176.00479817817703],"r":6.000000000000023,"start":9.999999998456554,"end":99.99999999835444},{"type":"LINE","a":[-148.8507680187099,181.91604893517265],"b":[-154.40750970281624,213.42989702967728]},{"type":"ARC","c":[-160.31635622091753,212.38800796383498],"r":5.999999999999953,"start":9.999999998455563,"end":99.99999999393002},{"type":"LINE","a":[-178.62092162283568,218.2992587218527],"b":[-184.1776633069769,249.81310681640002]},{"type":"ARC","c":[-190.08650982507822,248.7712177505577],"r":5.999999999999993,"start":9.999999998455785,"end":99.99999999392975}]};
-function referenceRing(entities){
- const segments=entities.map(e=>{
-  if(e.type==='LWPOLYLINE')return e.points;
-  if(e.type==='LINE')return [e.a,e.b];
-  let sweep=(e.end-e.start+360)%360,count=Math.ceil(sweep*Math.PI/180/(2*Math.acos(1-.005/e.r)));
-  const angles=Array.from({length:count+1},(_,i)=>sweep*i/count);
-  for(const cardinal of [0,90,180,270]){const delta=(cardinal-e.start+360)%360;if(delta>0&&delta<sweep)angles.push(delta);}
-  return angles.sort((a,b)=>a-b).map(delta=>{const a=(e.start+delta)*Math.PI/180;return [e.c[0]+e.r*Math.cos(a),e.c[1]+e.r*Math.sin(a)];});
- });
- let ring=segments.shift().slice();
- const near=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1])<1e-5;
- while(segments.length){const end=ring.at(-1),i=segments.findIndex(s=>near(s[0],end)||near(s.at(-1),end));if(i<0)throw Error('Disconnected DXF entities');const s=segments.splice(i,1)[0];if(!near(s[0],end))s.reverse();ring.push(...s.slice(1));}
- return ring;
-}
-function drawReference(){
- const name=$('#referencePart').value,ring=referenceRing(DXF_REFERENCES[name]);
- const xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]),xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);
- const W=xmax-xmin,L=ymax-ymin,sc=Math.min(800/W,310/L),X=x=>50+(x-xmin)*sc,Y=y=>365-(y-ymin)*sc;
- let overlay='';
- if(name!=='Side_Panel'){
-  const kind=name==='Tray_A_Plate'?'floor':name==='Tray_A_Wall'?'wall':'front';
-  const end=kind==='floor'?0:kind==='wall'?-.75:-L/2+(-ymin-3)/2;
-  const generated=longContour(W,L,3,kind,end).map(poly=>poly.map(r=>r.map(([x,y])=>[x,y+(ymin+ymax)/2])));
-  overlay=`<path d="${contourPath(generated,X,Y)}" fill="none" stroke="#7fe8cc" stroke-width="1" stroke-dasharray="4 3"/>`;
- }
- $('#referenceView').setAttribute('viewBox','0 0 900 400');
- $('#referenceView').innerHTML=`<text x="50" y="25" fill="#eee" font-size="16">${name}.dxf · ${W.toFixed(3)} × ${L.toFixed(3)} mm</text><path d="${contourPath([[ring]],X,Y)}" fill="#302a15" stroke="#efcb62" stroke-width="2"/>${overlay}`;
- $('#referenceNote').textContent=name==='Side_Panel'?'Original eight-station reference outline. The configurable side panel is derived from your current tray settings; it is not a fixed copy of this DXF.':'Gold: supplied DXF. Dashed green: shared contour generator evaluated at the reference dimensions. Rounded arcs use a maximum 0.005 mm chord error in the preview.';
-}
-$('#referencePart').addEventListener('change',drawReference);drawReference();
-</script><div id="dimensionTooltip" role="status"></div><div id="editToast" role="status"></div><script>const editor={selected:0,drag:null,history:[],overlay:null,handles:[],guides:[],frame:0};
-const projectFields=['mat','gap','extDefault','frontWallDefault','partLength','frontGrip','toeExtra','sideRadius','rearExtra'];
-function configuration(){return {schema:'display-stand-config',version:2,units:'mm',spacingReference:'previous-tray',settings:Object.fromEntries(projectFields.map(id=>[id,Number($('#'+id).value)])),trayGroups:S.trays.map(t=>({...t})),view:{measurements:$('#showDimensions').checked,snap:$('#snapEnabled').checked,snapStep:Number($('#snapSize').value),linkedEdit:$('#linkedEdit').checked}};}
+<div id="dimensionTooltip" role="status"></div><div id="editToast" role="status"></div><script>const editor={selected:0,drag:null,history:[],overlay:null,handles:[],guides:[],frame:0};
+const projectFields=['mat','frontHeightDefault','extDefault','partLength','frontGrip','toeExtra','sideRadius','rearExtra'];
+function configuration(){return {schema:'display-stand-config',version:3,units:'mm',frontHeightMeaning:'first tray: front wall height; subsequent trays: spacing from previous tray',settings:Object.fromEntries(projectFields.map(id=>[id,Number($('#'+id).value)])),trayGroups:S.trays.map(t=>({...t})),view:{measurements:$('#showDimensions').checked,snap:$('#snapEnabled').checked,snapStep:Number($('#snapSize').value),linkedEdit:$('#linkedEdit').checked,xray:$('#xrayView').checked}};}
 function remember(){editor.history.push(JSON.stringify(configuration()));if(editor.history.length>40)editor.history.shift();$('#undoEdit').disabled=false;}
 function toast(message){const t=$('#editToast');t.textContent=message;t.style.opacity=1;clearTimeout(editor.toastTimer);editor.toastTimer=setTimeout(()=>t.style.opacity=0,1800);}
 function footprint(G){const p=G.model.side.flat(2).map(([x,y])=>({x,y}));G.model.parts.forEach(q=>{const d=q.direction,n={x:-d.y,y:d.x};for(const a of [-1,1])for(const b of [-1,1])p.push({x:q.center.x+d.x*q.length*a/2+n.x*G.thick*b/2,y:q.center.y+d.y*q.length*a/2+n.y*G.thick*b/2});});return {width:G.model.width,xmin:Math.min(...p.map(p=>p.x)),xmax:Math.max(...p.map(p=>p.x)),ymin:Math.min(...p.map(p=>p.y)),ymax:Math.max(...p.map(p=>p.y))};}
-const dimensionKeys=['depth','angle','wall','rise','extend','frontWall'];
+const dimensionKeys=['depth','angle','wall','frontHeight','extend'];
 function matchesDimensions(a,b){return dimensionKeys.every(k=>Math.abs(Number(a[k]??DEFAULT_TRAY[k])-Number(b[k]??DEFAULT_TRAY[k]))<1e-8);}
 function editTargets(){if(!$('#linkedEdit').checked)return [isolateLayer()];const selected=currentGeometry.trays[editor.selected].t;return S.trays.flatMap((group,i)=>matchesDimensions(group,selected)?[i]:[]);}
 function isolateLayer(){const item=currentGeometry.trays[editor.selected],index=item.t.groupIndex,group=S.trays[index];if(group.count===1)return index;const before=item.t.copyIndex,after=group.count-before-1,items=[];if(before)items.push(makeTray({...group,count:before}));items.push(makeTray({...group,count:1}));if(after)items.push(makeTray({...group,count:after}));S.trays.splice(index,1,...items);return index+(before?1:0);}
@@ -78185,9 +78167,9 @@ function dimensionalHandles(G){const s=G.trays[editor.selected],c=Math.cos(s.a),
  return [
  {key:'depth',label:'Depth',value:s.t.depth,point:s.front,axis:{x:c,y:n},world:{x:W/2,y:s.front.y,z:s.front.x}},
  {key:'wall',label:'Wall',value:s.t.wall,point:s.wallTop,axis:{x:-n,y:c},world:{x:W/2,y:s.wallTop.y,z:s.wallTop.x}},
- ...(prev?[{key:'rise',label:'Spacing from previous',value:s.t.rise,
-  point:{x:prev.wallTop.x+Math.sin(prev.a)*Math.min(s.t.rise,prev.t.wall),y:prev.wallTop.y-Math.cos(prev.a)*Math.min(s.t.rise,prev.t.wall)},
-  axis:{x:Math.sin(prev.a),y:-Math.cos(prev.a)}}]:[]),
+ ...(prev?[{key:'frontHeight',label:'Spacing from previous',value:s.t.frontHeight,
+  point:{x:prev.wallTop.x+Math.sin(prev.a)*Math.min(s.t.frontHeight,prev.t.wall),y:prev.wallTop.y-Math.cos(prev.a)*Math.min(s.t.frontHeight,prev.t.wall)},
+  axis:{x:Math.sin(prev.a),y:-Math.cos(prev.a)}}]:[{key:'frontHeight',label:'Front wall height',value:s.t.frontHeight,point:s.frontWallTop,axis:{x:-n,y:c}}]),
  {key:'angle',label:'Angle',value:s.t.angle,point:{x:s.floorRear.x+c*s.t.depth*.65,y:s.floorRear.y+n*s.t.depth*.65},axis:{x:-n,y:c},pivot:s.floorRear,world:{x:W/2,y:s.floorRear.y+n*s.t.depth*.65,z:s.floorRear.x+c*s.t.depth*.65}},
 
  ];}
@@ -78225,11 +78207,11 @@ function finishDimension(cancel=false){const d=editor.drag;if(!d)return;if(edito
 function undoEdit(){const saved=editor.history.pop();if(!saved)return;const data=JSON.parse(saved);S.trays=data.trayGroups.map(makeTray);Object.entries(data.settings).forEach(([id,v])=>$('#'+id).value=v);ui();render();$('#undoEdit').disabled=!editor.history.length;toast('Change undone');}
 function refreshEditor(G){editor.selected=Math.min(editor.selected,G.trays.length-1);const linked=$('#linkedEdit').checked?G.trays.filter(s=>matchesDimensions(s.t,G.trays[editor.selected].t)).length:0;$('#selectedLayer').textContent=`Layer ${editor.selected+1} / ${G.trays.length}${linked?' · '+linked+' linked':''}`;$('#removeLayer').disabled=G.trays.length===1;
  document.querySelectorAll('.tray').forEach((card,i)=>card.classList.toggle('selected',i===G.trays[editor.selected].t.groupIndex));
- drawEditor2D(G);buildEditor3D(G);
+ drawEditor2D(G);buildEditor3D(G);window.update2DHandleScale?.();
 }
 function drawEditor2D(G){$('#svg').querySelector('.editor2d')?.remove();const group=document.createElementNS(NS,'g');group.classList.add('editor2d');const m=svgMap(G);
  G.trays.forEach((s,i)=>{const g=document.createElementNS(NS,'g');g.setAttribute('class','layerPick'+(i===editor.selected?' active':''));const x=m.X((s.front.x+s.floorRear.x)/2),y=m.Y((s.front.y+s.floorRear.y)/2);g.innerHTML=`<circle cx="${x}" cy="${y+18}" r="11"/><text x="${x}" y="${y+18}">${i+1}</text>`;g.addEventListener('click',()=>selectLayer(i));group.appendChild(g);});
- dimensionalHandles(G).forEach(h=>{const g=document.createElementNS(NS,'g');g.setAttribute('class','svgHandle');g.setAttribute('tabindex','0');g.setAttribute('role','slider');g.setAttribute('aria-label',h.label);g.setAttribute('aria-valuenow',h.value);const x=m.X(h.point.x),y=m.Y(h.point.y);g.innerHTML=`<circle cx="${x}" cy="${y}" r="7"/><text x="${x>780?x-12:x+12}" y="${y-10}" text-anchor="${x>780?'end':'start'}">${h.label} ${h.value.toFixed(1)}${h.key==='angle'?'°':' mm'}</text>`;g.addEventListener('pointerdown',e=>beginDimension(e,h,'2d'));g.addEventListener('keydown',e=>keyboardDimension(e,h));group.appendChild(g);});
+ dimensionalHandles(G).forEach(h=>{const g=document.createElementNS(NS,'g');g.setAttribute('class','svgHandle');g.setAttribute('tabindex','0');g.setAttribute('role','slider');g.setAttribute('aria-label',h.label);g.setAttribute('aria-valuenow',h.value);g.setAttribute('aria-valuetext',h.label+' '+h.value+(h.key==='angle'?' degrees':' millimeters'));const x=m.X(h.point.x),y=m.Y(h.point.y);g.innerHTML=`<circle cx="${x}" cy="${y}" r="7"/><text x="${x>780?x-12:x+12}" y="${y-10}" text-anchor="${x>780?'end':'start'}">${h.label} ${h.value.toFixed(1)}${h.key==='angle'?'°':' mm'}</text>`;g.addEventListener('pointerdown',e=>beginDimension(e,h,'2d'));g.addEventListener('keydown',e=>keyboardDimension(e,h));group.appendChild(g);});
  if($('#showDimensions').checked){const f=footprint(G),x1=m.X(f.xmin),x2=m.X(f.xmax),yb=Math.min(702,m.Y(f.ymin)+12),yt=m.Y(f.ymax),xr=Math.min(980,x2+25);const dims=document.createElementNS(NS,'g');dims.innerHTML=`<path d="M${x1},${yb-5}v10 M${x1},${yb}H${x2} M${x2},${yb-5}v10 M${xr-5},${yt}h10 M${xr},${yt}V${yb} M${xr-5},${yb}h10" fill="none" stroke="#597661" stroke-width="1.3"/><text x="${(x1+x2)/2}" y="${yb-7}" text-anchor="middle" fill="#355a43" font-size="12">Footprint ${f.width.toFixed(1)} × ${(f.xmax-f.xmin).toFixed(1)} mm</text><text x="${xr-7}" y="${(yb+yt)/2}" text-anchor="end" fill="#355a43" font-size="12">Height ${(f.ymax-f.ymin).toFixed(1)} mm</text>`;group.prepend(dims);}
  $('#svg').appendChild(group);
 }
@@ -78265,4 +78247,27 @@ $('#exportJSON').onclick=()=>{const data=configuration(),f=footprint(currentGeom
 
 refreshEditor(currentGeometry);
 
+</script><script>const layoutViewport={x:0,y:0,width:1000,height:720};
+const layoutPointers=new Map();let layoutGesture=null;
+function update2DHandleScale(){
+ const svg=$('#svg'),ctm=svg.getScreenCTM();if(!ctm)return;
+ const scale=Math.hypot(ctm.a,ctm.b)||1;
+ svg.querySelectorAll('.svgHandle').forEach(g=>{g.querySelector('circle').setAttribute('r',7/scale);g.querySelector('text').style.fontSize=(12/scale)+'px';});
+}
+function apply2DViewport(){const v=layoutViewport;$('#svg').setAttribute('viewBox',`${v.x} ${v.y} ${v.width} ${v.height}`);$('#zoom2DValue').value=Math.round(100000/v.width)+'%';update2DHandleScale();}
+function layoutPoint(clientX,clientY){const svg=$('#svg'),p=svg.createSVGPoint();p.x=clientX;p.y=clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+function zoom2D(factor,clientX,clientY){const p=layoutPoint(clientX,clientY),v=layoutViewport,width=Math.max(200,Math.min(4000,v.width*factor)),ratio=width/v.width;v.x=p.x+(v.x-p.x)*ratio;v.y=p.y+(v.y-p.y)*ratio;v.width=width;v.height=width*.72;apply2DViewport();}
+function pan2D(dx,dy){const inv=$('#svg').getScreenCTM().inverse();layoutViewport.x-=inv.a*dx+inv.c*dy;layoutViewport.y-=inv.b*dx+inv.d*dy;apply2DViewport();}
+function gesture2D(){const p=[...layoutPointers.values()];if(!p.length)return null;if(p.length===1)return {x:p[0].x,y:p[0].y,distance:null};return {x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,distance:Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y)};}
+const layoutSVG=$('#svg');
+layoutSVG.addEventListener('wheel',e=>{if(editor.drag)return;e.preventDefault();zoom2D(Math.exp(Math.max(-200,Math.min(200,e.deltaY))*.002),e.clientX,e.clientY);},{passive:false});
+layoutSVG.addEventListener('pointerdown',e=>{if(e.button!==0||editor.drag||e.target.closest('.svgHandle,.layerPick'))return;e.preventDefault();layoutPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});layoutSVG.setPointerCapture(e.pointerId);layoutGesture=gesture2D();layoutSVG.classList.add('panning');});
+layoutSVG.addEventListener('pointermove',e=>{if(!layoutPointers.has(e.pointerId))return;layoutPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const next=gesture2D();if(layoutGesture){pan2D(next.x-layoutGesture.x,next.y-layoutGesture.y);if(next.distance>1&&layoutGesture.distance>1)zoom2D(layoutGesture.distance/next.distance,next.x,next.y);}layoutGesture=next;});
+function endLayoutPointer(e){layoutPointers.delete(e.pointerId);layoutGesture=gesture2D();if(!layoutPointers.size)layoutSVG.classList.remove('panning');}
+layoutSVG.addEventListener('pointerup',endLayoutPointer);layoutSVG.addEventListener('pointercancel',endLayoutPointer);layoutSVG.addEventListener('lostpointercapture',endLayoutPointer);
+window.addEventListener('blur',()=>{layoutPointers.clear();layoutGesture=null;layoutSVG.classList.remove('panning');});
+function zoom2DCenter(factor){const r=layoutSVG.getBoundingClientRect();zoom2D(factor,r.left+r.width/2,r.top+r.height/2);}
+$('#zoom2DIn').onclick=()=>zoom2DCenter(.8);$('#zoom2DOut').onclick=()=>zoom2DCenter(1.25);$('#fit2D').onclick=()=>{Object.assign(layoutViewport,{x:0,y:0,width:1000,height:720});apply2DViewport();};
+new ResizeObserver(update2DHandleScale).observe(layoutSVG);
+window.update2DHandleScale=update2DHandleScale;apply2DViewport();
 </script></body></html>
