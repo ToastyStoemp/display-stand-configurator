@@ -202,15 +202,20 @@ if(window.previewDebug){
 
 const originalBuildModel=buildModel;
 buildModel=function(G){const model=originalBuildModel(G);if(studio.fabrication.relief){model.side=Fabrication.relief(model.side,studio.fabrication.relief);model.parts.forEach(p=>p.contours=Fabrication.relief(p.contours,studio.fabrication.relief));}return model;};
+function adjustRearWallToMatch(index,height){
+  if(!Number.isFinite(height)||height<=0||height>1000)return;
+  const tray=isolatePlacementTray(index);tray.wall=Math.max(tray.wall,height);
+  editor.selected=index;studio.editSession=null;ui();render();
+}
 function designChecks(G){
-  const issues=[],add=(message,tray=null,severity='warning',product=false)=>issues.push({message,tray,severity,product});
+  const issues=[],add=(message,tray=null,severity='warning',product=false,wallHeight=null)=>issues.push({message,tray,severity,product,wallHeight});
   if(G.model.side.length!==1)add(`Side panel has ${G.model.side.length} separate regions. Adjust tray angles, spacing or relief.` ,null,'error');
   G.model.parts.forEach(p=>{if(p.contours.length!==1)add(`${p.name} is split or empty. Reduce relief or revise its dimensions.`,p.tray,'error');});
   G.joints.forEach(j=>{if(j.total<G.thick)add(`${j.kind==='front'?'Front':'Rear'} wall on tray ${j.tray+1} has only ${j.total.toFixed(1)} mm of joint engagement.`,j.tray);});
   G.trays.forEach((s,i)=>{
     if(i&&s.t.frontHeight>G.trays[i-1].t.wall)add(`Tray ${i+1} spacing exceeds the previous wall height; its position is clamped.`,i,'error');
-    if(s.t.placements){let reported=0;const tall=new Set();for(const item of s.t.placements){const p=studio.products.find(p=>p.id===item.productId);if(!p)continue;if(p.height>s.t.wall&&!tall.has(p.id)){tall.add(p.id);add(`${p.name} extends ${(p.height-s.t.wall).toFixed(1)} mm above tray ${i+1}'s rear wall.`,i,'warning',true);}const reason=ProductPlacement.valid(G,s,p,item,s.t.placements,studio.products,item.id);if(reason&&reported++<3)add(`${p.name} on tray ${i+1}: ${reason.toLowerCase()}.`,i,'error',true);}}
-    const p=studio.products.find(p=>p.id===s.t.productId);if(p){const fit=packProduct(G,s,p);if(!fit.capacity)add(`${p.name} does not fit tray ${i+1}'s usable width or depth.`,i,'error',true);else if(p.quantity>fit.capacity)add(`Tray ${i+1} fits ${fit.capacity} ${p.name}; ${p.quantity} requested.`,i);if(p.height>s.t.wall)add(`${p.name} extends ${(p.height-s.t.wall).toFixed(1)} mm above tray ${i+1}'s rear wall.`,i);if(fit.count>500)add(`Tray ${i+1} holds ${fit.count} products; the preview draws up to 500 products in total.`,i);}
+    if(s.t.placements){let reported=0;const tall=new Set();for(const item of s.t.placements){const p=studio.products.find(p=>p.id===item.productId);if(!p)continue;if(p.height>s.t.wall&&!tall.has(p.id)){tall.add(p.id);add(`${p.name} extends ${(p.height-s.t.wall).toFixed(1)} mm above tray ${i+1}'s rear wall.`,i,'warning',true,p.height);}const reason=ProductPlacement.valid(G,s,p,item,s.t.placements,studio.products,item.id);if(reason&&reported++<3)add(`${p.name} on tray ${i+1}: ${reason.toLowerCase()}.`,i,'error',true);}}
+    const p=studio.products.find(p=>p.id===s.t.productId);if(p){const fit=packProduct(G,s,p);if(!fit.capacity)add(`${p.name} does not fit tray ${i+1}'s usable width or depth.`,i,'error',true);else if(p.quantity>fit.capacity)add(`Tray ${i+1} fits ${fit.capacity} ${p.name}; ${p.quantity} requested.`,i);if(p.height>s.t.wall)add(`${p.name} extends ${(p.height-s.t.wall).toFixed(1)} mm above tray ${i+1}'s rear wall.`,i,'warning',true,p.height);if(fit.count>500)add(`Tray ${i+1} holds ${fit.count} products; the preview draws up to 500 products in total.`,i);}
   });
   // Long parts share the width axis. Positive-area intersection in side view
   // therefore identifies physical interference, excluding edge-only contact.
@@ -224,8 +229,9 @@ function designChecks(G){
   }
   if(collisions>8)add(`${collisions-8} additional part intersections.`,null,'error');
   if(studio.fabrication.relief>G.thick)add('Corner relief is wider than the material thickness; inspect the remaining material around the joints.');
-  studio.issues=issues;$('#designChecks').innerHTML=issues.length?issues.map((issue,i)=>`<li class="${issue.severity}">${escapeHTML(issue.message)}${issue.tray!==null?` <button data-issue="${i}">Show tray ${issue.tray+1}</button>`:''}</li>`).join(''):'<li class="ok">No issues found by the current geometry and product-fit checks.</li>';
-  $('#designChecks').querySelectorAll('button').forEach(b=>b.onclick=()=>selectLayer(issues[Number(b.dataset.issue)].tray));
+  studio.issues=issues;$('#designChecks').innerHTML=issues.length?issues.map((issue,i)=>`<li class="${issue.severity}">${escapeHTML(issue.message)}${issue.tray!==null?` <button data-issue="${i}">Show tray ${issue.tray+1}</button>${issue.wallHeight!==null?` <button data-adjust-wall="${i}">Adjust rear wall to match</button>`:''}`:''}</li>`).join(''):'<li class="ok">No issues found by the current geometry and product-fit checks.</li>';
+  $('#designChecks').querySelectorAll('[data-issue]').forEach(b=>b.onclick=()=>selectLayer(issues[Number(b.dataset.issue)].tray));
+  $('#designChecks').querySelectorAll('[data-adjust-wall]').forEach(b=>b.onclick=()=>{const issue=issues[Number(b.dataset.adjustWall)];adjustRearWallToMatch(issue.tray,issue.wallHeight);});
 }
 function fabricationParts(){return [{name:'Left side panel',contours:currentGeometry.model.side},{name:'Right side panel',contours:currentGeometry.model.side},...currentGeometry.model.parts.map(p=>({name:p.name,contours:p.contours}))];}
 function downloadFile(name,text,type){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
