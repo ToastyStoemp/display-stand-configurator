@@ -1,6 +1,6 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tray Rectangle Builder</title>
+<title>Display Stand Configurator</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#eef1f4;color:#20242a}.app{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
 aside{background:#fff;padding:16px;border-right:1px solid #d7dce2;overflow:auto;max-height:100vh}main{padding:14px}.title{font-size:18px;font-weight:750}.sub{font-size:12px;color:#66717c;line-height:1.45;margin:5px 0 14px}
@@ -68,7 +68,7 @@ button{background:#fffefa;border:1px solid #d7ddd1;color:#3a5144;font-size:11px;
     <label class="switch xraySwitch"><input id="xrayView" type="checkbox"> X-ray view</label><label class="switch xraySwitch"><input id="showDimensions" type="checkbox" checked> Measurements</label><button id="sideCamera" type="button">Side view</button><button id="resetCamera" type="button">Reset camera</button>
   </div>
   <div class="partLegend" aria-label="Part colors"><span><i style="background:#547f70"></i>Floors</span><span><i style="background:#c9ad83"></i>Side panels</span><span><i style="background:#738cad"></i>Walls + front wall</span></div><div id="threeView"><div id="threeStatus" style="padding:16px;color:#aaa">Loading 3D preview…</div></div>
-  <div class="smallnote">Drag to orbit · wheel to zoom. Assembly: floors first, then walls. Disassembly: walls first, then floors. Two identical side panels sit at the mating notches. Parts slide along their joint directions. Motion shows the assembly sequence; clearance for arbitrary settings is not certified.</div>
+  <div class="smallnote">Left-drag products to move them or empty space to orbit · middle-drag to orbit anywhere · right-drag to pan · wheel to zoom. Shift-left-drag also pans; Alt-left-drag orbits over products. Assembly: floors first, then walls. Disassembly: walls first, then floors. Two identical side panels sit at the mating notches. Parts slide along their joint directions. Motion shows the assembly sequence; clearance for arbitrary settings is not certified.</div>
 </div>
 <section class="partsWrap" id="sideLayout"><div class="partsHead"><strong>2D layout</strong><div class="layoutNavigation"><span>Drag to pan · scroll or pinch to zoom</span><button id="zoom2DOut" aria-label="Zoom out of 2D layout">−</button><output id="zoom2DValue" aria-live="polite">100%</output><button id="zoom2DIn" aria-label="Zoom into 2D layout">+</button><button id="fit2D">Fit view</button></div></div><div class="layoutWorkspace"><div class="layoutTools" role="region" aria-label="2D editing controls"><div class="eyebrow">EDIT LAYERS</div><div class="layerBar"><button id="previousLayer" aria-label="Select previous layer">←</button><b id="selectedLayer">Layer 1</b><button id="nextLayer" aria-label="Select next layer">→</button><button id="addLayer">+ Layer</button><button id="duplicateLayer">Duplicate</button><button id="removeLayer">Remove</button><button id="undoEdit">Undo</button><span>Edit dimensions in the 2D side layout · Shift bypasses snap</span></div><div class="editBar"><label class="switch"><input id="linkedEdit" type="checkbox"> Edit matching trays together</label><label class="switch"><input id="snapEnabled" type="checkbox" checked> Snap</label><select id="snapSize" aria-label="Snap spacing"><option value="1">1 mm / 1°</option><option value="5" selected>5 mm / 5°</option><option value="10">10 mm / 10°</option></select></div></div><div class="layoutCanvas"><svg id="svg" viewBox="0 0 1000 720"></svg></div></div></section><div class="partsWrap">
   <div class="partsHead">
@@ -77556,7 +77556,7 @@ const NS="http://www.w3.org/2000/svg",$=q=>document.querySelector(q);
 const DEFAULT_TRAY_1={"depth":50,"angle":10,"wall":70,"extend":20,"count":1,"frontHeight":30};
 const PART_COLORS={floor:'#547f70',side:'#c9ad83',wall:'#738cad'};
 const DEFAULT_TRAY={"depth":30,"angle":10,"wall":100,"extend":20,"count":1,"frontHeight":30};
-const makeTray=(base=DEFAULT_TRAY,overrides={})=>({...DEFAULT_TRAY,...base,...overrides});
+const makeTray=(base=DEFAULT_TRAY,overrides={})=>{const tray={...DEFAULT_TRAY,...base,...overrides};if(tray.placements)tray.placements=tray.placements.map(item=>({...item}));return tray;};
 let S={trays:[{"depth":50,"angle":10,"wall":70,"extend":20,"count":1,"frontHeight":10},{"depth":50,"angle":10,"wall":70,"extend":20,"count":1,"frontHeight":30},{"depth":30,"angle":10,"wall":100,"extend":20,"count":4,"frontHeight":30}]};
 
 function expandedTrays(){
@@ -77586,7 +77586,8 @@ function ui(){
    d.querySelectorAll("input").forEach(inp=>inp.oninput=e=>{
      const k=e.target.dataset.k;
      const value=Number(e.target.value);
-     const nextValue=k==="count"?Math.min(100,Math.max(1,Math.round(value||1))):k==="angle"?Math.max(-60,Math.min(60,value)):Math.max(k==="depth"||k==="wall"?.1:0,value);
+     if(e.target.value===''||!Number.isFinite(value))return;
+     const nextValue=k==="count"?Math.min(100,Math.max(1,Math.round(value||1))):k==="angle"?Math.max(-60,Math.min(60,value)):Math.min(1000,Math.max(k==="depth"||k==="wall"?.1:0,value));
      if(window.setDimensionFromSidebar)window.setDimensionFromSidebar(t,k,nextValue);else t[k]=nextValue;
      render()
    });
@@ -78015,8 +78016,16 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;host.appendChild(renderer.domElement);
 
-const orbit={target:new THREE.Vector3(),yaw:.72,pitch:.48,distance:700,drag:false,x:0,y:0};
+const orbit={tray:0,panX:0,panY:0,target:new THREE.Vector3(),yaw:.72,pitch:.48,distance:700,drag:false,x:0,y:0};
+function trayOrbitPoint(G,index){
+ const tray=G?.trays[Math.min(index,G.trays.length-1)];if(!tray)return null;
+ const depth=tray.t.depth/2,height=G.thick/2;
+ return {x:0,y:tray.floorRear.y+Math.sin(tray.a)*depth+Math.cos(tray.a)*height,z:tray.floorRear.x+Math.cos(tray.a)*depth-Math.sin(tray.a)*height};
+}
 function updateCamera(){
+ const pivot=trayOrbitPoint(lastG,orbit.tray);if(pivot)orbit.target.set(pivot.x,pivot.y,pivot.z);
+ const width=Math.max(1,host.clientWidth),height=Math.max(1,host.clientHeight);
+ camera.setViewOffset(width,height,orbit.panX,orbit.panY,width,height);
  const cp=Math.cos(orbit.pitch);
  camera.position.set(orbit.target.x+orbit.distance*Math.sin(orbit.yaw)*cp,
   orbit.target.y+orbit.distance*Math.sin(orbit.pitch),
@@ -78024,10 +78033,30 @@ function updateCamera(){
  camera.lookAt(orbit.target);camera.updateMatrixWorld();window.positionEditor3D?.()
 }
 const canvas=renderer.domElement;canvas.style.touchAction="none";
-canvas.addEventListener("pointerdown",e=>{orbit.drag=true;orbit.x=e.clientX;orbit.y=e.clientY;canvas.setPointerCapture?.(e.pointerId)});
-canvas.addEventListener("pointermove",e=>{if(window.draggingDimension||!orbit.drag)return;orbit.yaw-=(e.clientX-orbit.x)*.008;orbit.pitch=Math.max(-1.35,Math.min(1.35,orbit.pitch+(e.clientY-orbit.y)*.008));orbit.x=e.clientX;orbit.y=e.clientY;updateCamera()});
-canvas.addEventListener("pointerup",()=>orbit.drag=false);canvas.addEventListener("pointercancel",()=>orbit.drag=false);
-canvas.addEventListener("wheel",e=>{e.preventDefault();orbit.distance=Math.max(80,Math.min(4000,orbit.distance*Math.exp(e.deltaY*.001)));updateCamera()},{passive:false});
+const cameraPointers=new Map();let cameraGesture=null;
+function panCamera(dx,dy){orbit.panX-=dx;orbit.panY-=dy;}
+window.setOrbitTray=index=>{if(orbit.tray!==index){orbit.tray=index;orbit.panX=0;orbit.panY=0;}updateCamera();};
+function cameraPointerGesture(){const p=[...cameraPointers.values()];if(!p.length)return null;return p.length===1?{x:p[0].x,y:p[0].y,distance:0}:{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,distance:Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y)};}
+canvas.addEventListener("contextmenu",e=>e.preventDefault());
+canvas.addEventListener("pointerdown",e=>{
+ if(document.body.classList.contains('stockDragging')||window.draggingDimension)return;
+ e.preventDefault();canvas.focus({preventScroll:true});cameraPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});cameraGesture=cameraPointerGesture();
+ orbit.drag=true;orbit.pan=e.button===2||(e.button===0&&e.shiftKey);canvas.setPointerCapture?.(e.pointerId);
+});
+canvas.addEventListener("pointermove",e=>{
+ if(!cameraPointers.has(e.pointerId)||window.draggingDimension)return;
+ cameraPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const next=cameraPointerGesture(),dx=next.x-cameraGesture.x,dy=next.y-cameraGesture.y;
+ if(cameraPointers.size>1||orbit.pan)panCamera(dx,dy);
+ else{orbit.yaw-=dx*.008;orbit.pitch=Math.max(-1.35,Math.min(1.35,orbit.pitch+dy*.008));}
+ if(next.distance>1&&cameraGesture.distance>1)orbit.distance=Math.max(80,Math.min(4000,orbit.distance*cameraGesture.distance/next.distance));
+ cameraGesture=next;updateCamera();
+});
+function endCameraPointer(e){cameraPointers.delete(e.pointerId);cameraGesture=cameraPointerGesture();orbit.drag=cameraPointers.size>0;}
+canvas.addEventListener("pointerup",endCameraPointer);canvas.addEventListener("pointercancel",endCameraPointer);canvas.addEventListener("lostpointercapture",endCameraPointer);
+window.addEventListener('blur',()=>{cameraPointers.clear();cameraGesture=null;orbit.drag=false;});
+canvas.style.cursor='grab';
+canvas.addEventListener("wheel",e=>{e.preventDefault();if(document.body.classList.contains('stockDragging'))return;orbit.distance=Math.max(80,Math.min(4000,orbit.distance*Math.exp(e.deltaY*.001)));updateCamera()},{passive:false});
+
 
 scene.add(new THREE.HemisphereLight(0xffffff,0x30343a,2.3));
 const key=new THREE.DirectionalLight(0xfff2de,3.2);key.position.set(-250,500,350);key.castShadow=true;
@@ -78102,7 +78131,7 @@ function addLongMesh(G,p,motion){
 function resetCamera(){
  if(!lastG)return;const W=+document.getElementById("partLength").value||300,pts=lastG.trays.flatMap(s=>[s.front,s.wallTop,s.wallBottom]);
  const minZ=Math.min(...pts.map(p=>p.x)),maxZ=Math.max(...pts.map(p=>p.x)),minY=Math.min(...pts.map(p=>p.y)),maxY=Math.max(...pts.map(p=>p.y)),size=Math.max(W,maxZ-minZ,maxY-minY);
- orbit.target.set(0,(minY+maxY)/2,(minZ+maxZ)/2);orbit.distance=size*2.05;orbit.yaw=.72;orbit.pitch=.42;camera.near=Math.max(.1,size/1000);camera.far=size*12;camera.updateProjectionMatrix();updateCamera()
+ orbit.panX=0;orbit.panY=0;orbit.distance=size*2.05;orbit.yaw=.72;orbit.pitch=.42;camera.near=Math.max(.1,size/100);camera.far=size*12;camera.updateProjectionMatrix();updateCamera()
 }
 function applyExplosion(v){
  parts.forEach(m=>{const q=m.userData.motion;const u=Math.max(0,Math.min(1,(v-q.start)/(q.end-q.start)));
@@ -78129,7 +78158,7 @@ function rebuild(G){
  ground.position.y=bounds.min.y-.6;key.position.set(middle.x-radius,middle.y+radius*2,middle.z+radius);
  key.target.position.copy(middle);scene.add(key.target);Object.assign(key.shadow.camera,{left:-radius,right:radius,top:radius,bottom:-radius,near:1,far:radius*6});key.shadow.camera.updateProjectionMatrix();
  applyExplosion(+$('#explodeAmount').value);
- if(firstBuild)resetCamera();
+ if(firstBuild)resetCamera();else updateCamera();
  applyXRayView();
  window.previewDebug={root,parts,THREE,scene,camera,renderer,applyExplosion};
 }
@@ -78240,9 +78269,6 @@ function addLayer(duplicate){remember();const i=isolateLayer(),base=duplicate?{.
 $('#addLayer').onclick=()=>addLayer(false);$('#duplicateLayer').onclick=()=>addLayer(true);$('#removeLayer').onclick=()=>{if(currentGeometry.trays.length<=1)return;remember();S.trays.splice(isolateLayer(),1);editor.selected=Math.max(0,editor.selected-1);ui();render();toast('Layer removed');};$('#undoEdit').onclick=undoEdit;$('#undoEdit').disabled=true;
 $('#showDimensions').onchange=()=>refreshEditor(currentGeometry);
 $('#linkedEdit').onchange=()=>refreshEditor(currentGeometry);
-let fieldUndo=null;document.querySelector('aside').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')fieldUndo={target:e.target,state:JSON.stringify(configuration()),saved:false};});
-document.querySelector('aside').addEventListener('input',e=>{if(fieldUndo?.target===e.target&&!fieldUndo.saved){editor.history.push(fieldUndo.state);if(editor.history.length>40)editor.history.shift();fieldUndo.saved=true;$('#undoEdit').disabled=false;}},true);
-document.querySelector('aside').addEventListener('click',e=>{if(e.target.closest('button'))remember();},true);
 $('#exportJSON').onclick=()=>{const data=configuration(),f=footprint(currentGeometry);data.assembledSize={widthMm:f.width,depthMm:f.xmax-f.xmin,heightMm:f.ymax-f.ymin};const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='display-stand.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Design exported as JSON');};
 
 refreshEditor(currentGeometry);
@@ -78270,4 +78296,4 @@ function zoom2DCenter(factor){const r=layoutSVG.getBoundingClientRect();zoom2D(f
 $('#zoom2DIn').onclick=()=>zoom2DCenter(.8);$('#zoom2DOut').onclick=()=>zoom2DCenter(1.25);$('#fit2D').onclick=()=>{Object.assign(layoutViewport,{x:0,y:0,width:1000,height:720});apply2DViewport();};
 new ResizeObserver(update2DHandleScale).observe(layoutSVG);
 window.update2DHandleScale=update2DHandleScale;apply2DViewport();
-</script></body></html>
+</script><script src="vendor/clipper.js"></script><script src="manufacturing.js"></script><script src="product-placement.js?v=20260919-2"></script><script src="studio.js?v=20260919-4"></script><script src="product-arranger.js?v=20260919-3"></script></body></html>

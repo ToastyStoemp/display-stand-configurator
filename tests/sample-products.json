@@ -1,0 +1,17 @@
+{
+  "schema": "display-stand-products",
+  "version": 1,
+  "units": "mm",
+  "products": [
+    {
+      "id": "reusable-product-fixture",
+      "name": "Reusable product test",
+      "width": 65,
+      "height": 100,
+      "depth": 1,
+      "gap": 2,
+      "quantity": 8,
+      "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAEECAIAAAAOEomkAAAD/ElEQVR4nO3cu40VURBF0Y6INAgBi3RIEREFPhYJsCWMma77WdIKYE5pe/P6Pn9+/4J/esb/ApYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4+Lg4vnz/yr7EQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHQ3FwD3GQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0vG8fPHt/8xfqNr5z/LHmWpM905/9niLmckst38Z6/T7NvHjvOf7U6zYx+bzn+2u8teiWw9/9n3NOv3sft8cZg/EccLp1m5jwPmP7ufZs0+zpj/HHCa1fo4Zr44zH8xjpHTrNPHSfPFYb44xDEex+BpVujjsPniMF8c4hCHOMQhDnFMX+fy+eIwXxziEIc4xCEOcUxf5/L54jBfHOIYj+Owf0tePl8c5otDHCvEcdKPKC+fLw7z343jmA83Lp/vizfzJ+I44GPRy+eLw/yhOHZ/oOLy+V72MX86jk0fxbp8vtcEzU/eITU/ecHY/OTtc5I4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SD5NMD/5qMn85HNI85MPqc2fjuMDT7NjH5vO93iL+UNxfOpp1u9j9/niMH8ijhdOs3IfB8z3SK3578bx8mlW6+OY+eIw/8U4Rk6zTh8nzReH+eIQx3gcg6dZoY/D5ovDfHGIQxziEIc4xDF9ncvni8N8cYhDHOIQhzjEMX2dy+eLw3xxiGM8jsP+LXn5fHGYLw5xrBDHST+ivHy+OMx/N45jPty4fL4v3syfiOOAj0Uvny8O84fi2P2Bisvne9nH/Ok4Nn0U6/L5XhM0P3mH1PzkBWPzk7fPSeIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SH4JZn7yG1Lzk1+fm598t2L+dBwfeJod+9h0vm9lzR+K41NPs34fu88Xh/kTcbxwmpX7OGC+N8HMfzeOl0+zWh/HzBeH+S/GMXKadfo4ab44zBeHOMbjGDzNCn0cNl8c5otDHOIQhzjEIY7p61w+Xxzmi0Mc4hCHOMQhjunrXD5fHOaLQxzjcRz2b8nL54vDfHGIY4U4TvoR5eXzxWH+u3Ec8+HG5fN98Wb+RBwHfCx6+XxxmD8Ux+4PVFw+38s+5k/HsemjWJfP95qg+ck7pOYnLxibn7x9ThIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEwa/yFxL44RdrH1z0AAAAAElFTkSuQmCC"
+    }
+  ]
+}
